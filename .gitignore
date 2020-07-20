@@ -1,4 +1,5 @@
 venv
+trash
 *.pyc
 .DS_Store
 .env
