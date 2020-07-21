@@ -6,11 +6,14 @@ import plotly.figure_factory as ff
 
 import dash
 from dash.dependencies import Input, Output, State
+import dash_table_experiments as dte
 import dash_core_components as dcc
 import dash_html_components as html
 import dash_table
 
 import pandas as pd
+
+from modules import DashModul
 
 app = dash.Dash(
     __name__,
@@ -21,19 +24,12 @@ server = app.server
 ref_df = pd.read_csv('/home/jager/Projects/kaggle/data/competitive-data-science-predict-future-sales/sales_train.csv')
 col_unique_cnt = {}
 for col in ref_df.columns:
-    if ref_df[col].unique().shape[0] !=ref_df.shape[0]:
+    if ref_df[col].unique().shape[0] != ref_df.shape[0]:
         col_unique_cnt[ref_df[col].unique().shape[0]] = col
 max_var_col = col_unique_cnt[max(col_unique_cnt)]
 
-fig = go.Figure()
-fig.add_trace(go.Histogram(x=ref_df[max_var_col], histnorm='probability'))
-fig.update_layout(plot_bgcolor='rgb(221, 224, 235)', paper_bgcolor='rgb(221, 224, 235)', margin=go.layout.Margin(
-    l=0,  # left margin
-    r=0,  # right margin
-    b=0,  # bottom margin
-    t=0  # top margin
-))
-
+DM = DashModul()
+fig = DM.histPlot(ref_df, max_var_col)
 
 colors = {
     "graphBackground": "#F5F5F5",
@@ -73,13 +69,14 @@ app.layout = html.Div(
                         },
                         # Allow multiple files to be uploaded
                         multiple=True
-                )])]
+                            )
+                        ]
+                    )]
         ),
         html.Div(
             id="left-column",
             className="four columns",
             children=[
-                # Patient Volume Heatmap
                 html.Div(
                         id="description-card",
                         children=[
@@ -89,19 +86,33 @@ app.layout = html.Div(
                                 id="intro",
                                 children="Explore your data using advanced graphs and tabs",
                             ),
+                            html.Br(),
+                            # html.Button(
+                            #     id='propagate-button',
+                            #     n_clicks=0,
+                            #     children='Propagate Table Data'
+                            #),
                         ],
                     ),
                 html.Div([
                     dcc.Graph(id='Mygraph1', figure=fig),
                     # html.Button('Submit', id='submit-val', n_clicks=0),
-                    dcc.Graph(id='Mygraph_1'),
-                    #html.Div(id='Table_')
-                    #html.Div(id='output-data-upload')
-                ]),
-                ],
+                    #dcc.Graph(id='Mygraph_1')
+                    #html.Br(),
+                    ]
+                ),
+                html.Div(id="control-card",
+                        className="eight columns",
+                        children=[
+                        html.H5("Filter Column"),
+                            dcc.Dropdown(id='dropdown_table_filterColumn',
+                            multi=True,
+                            placeholder='Filter Column'),
+                        ]
+                ),
+            ]
         ),
-
-        # Right column
+        # Right column]),
         html.Div(
             id="right-column",
             className="eight columns",
@@ -117,13 +128,28 @@ app.layout = html.Div(
                 # Patient Volume Heatmap
                 html.Div([
                     # html.Button('Submit', id='submit-val', n_clicks=0),
-                    html.Div(id='Table_')
+                    html.Div(id='Table_'),
                     #dcc.Graph(id='Mygraph_')
-                    ]),
-                ],
-        )
+                    #html.H5("Updated Table"),
+                    #html.Div(dte.DataTable(rows=[{}], id='table'))
+                    ]
+                ),
+            ],
+        ),
     ],
 )
+
+@app.callback(Output('dropdown_table_filterColumn', 'options'),
+              [Input('upload-data', 'contents'),
+               Input('upload-data', 'filename')])
+def update_output(contents, filename):
+    if contents:
+        contents = contents[0]
+        filename = filename[0]
+        df = parse_data(contents, filename)
+        df = df.set_index(df.columns[0])
+    return [{'label': i, 'value': i} for i in df.columns]
+
 @app.callback(Output('Mygraph1', 'figure'), [
     Input('upload-data', 'contents'),
     Input('upload-data', 'filename')])
@@ -139,14 +165,7 @@ def update_graph(contents, filename):
                 col_unique_cnt[df[col].unique().shape[0]] = col
         max_var_col = col_unique_cnt[max(col_unique_cnt)]
 
-    fig = go.Figure()
-    fig.add_trace(go.Histogram(x=df[max_var_col], histnorm='probability'))
-    fig.update_layout(plot_bgcolor='rgb(221, 224, 235)', paper_bgcolor = 'rgb(221, 224, 235)', margin=go.layout.Margin(
-        l=0, #left margin
-        r=0, #right margin
-        b=0, #bottom margin
-        t=0  #top margin
-    ))
+        fig = DM.histPlot(df, max_var_col)
 
     return fig
 
@@ -165,26 +184,9 @@ def update_graph(contents, filename):
                 col_unique_cnt[df[col].unique().shape[0]] = col
         max_var_col = col_unique_cnt[max(col_unique_cnt)]
 
-    fig = go.Figure()
-    fig.add_trace(go.Heatmap(z=df.corr().values,
-               x=df.columns,
-               y=df.columns,
-               xgap=1, ygap=1,
-               colorbar_thickness=20,
-               colorbar_ticklen=3,
-               hoverinfo='text'
-               ))
-    fig.update_layout(plot_bgcolor='rgb(221, 224, 235)', paper_bgcolor = 'rgb(221, 224, 235)', margin=go.layout.Margin(
-        l=0, #left margin
-        r=0, #right margin
-        b=0, #bottom margin
-        t=0  #top margin
-    ))
-    # fig.add_trace(go.Histogram(x=df[max_var_col], histnorm='probability'))
+        fig = DM.heatmapPlot(df, max_var_col)
 
     return fig
-
-
 
 @app.callback(Output('Mygraph', 'figure'), [
     Input('upload-data', 'contents'),
@@ -201,18 +203,9 @@ def update_graph(contents, filename):
                 col_unique_cnt[df[col].unique().shape[0]] = col
         max_var_col = col_unique_cnt[max(col_unique_cnt)]
 
-    fig = go.Figure()
-    fig.add_trace(go.Box(y=df[max_var_col], quartilemethod="linear", name="Linear Quartile Mode"))
-    fig.update_layout(plot_bgcolor='rgb(221, 224, 235)', paper_bgcolor = 'rgb(221, 224, 235)', margin=go.layout.Margin(
-        l=0, #left margin
-        r=0, #right margin
-        b=0, #bottom margin
-        t=0  #top margin
-    ))
-    #fig.add_trace(go.Histogram(x=df[max_var_col], histnorm='probability'))
+        fig = DM.boxPlot(df, max_var_col)
 
     return fig
-
 
 @app.callback(Output('Table_', 'children'), [
     Input('upload-data', 'contents'),
@@ -230,27 +223,25 @@ def update_table(contents, filename):
         columns=[
             {'name': i, 'id': i} for i in df.columns
         ],
-        fixed_rows={ 'headers': True, 'data': 0 },
+        fixed_rows={'headers': True, 'data': 0},
         style_cell={
             'whiteSpace': 'normal'
         },
-        style_data_conditional=[
-            {'if': {'column_id': 'index'},
-             'width': '50px'},
-            {'if': {'column_id': 'Year'},
-             'width': '50px'},
-            {'if': {'column_id': 'Country'},
-             'width': '100px'},
-            {'if': {'column_id': 'Continent'},
-             'width': '70px'},
-            {'if': {'column_id': 'Emission'},
-             'width': '75px'},
-        ],
+        # style_data_conditional=[
+        #     {'if': {'column_id': 'index'},
+        #      'width': '50px'},
+        #     {'if': {'column_id': 'Year'},
+        #      'width': '50px'},
+        #     {'if': {'column_id': 'Country'},
+        #      'width': '100px'},
+        #     {'if': {'column_id': 'Continent'},
+        #      'width': '70px'},
+        #     {'if': {'column_id': 'Emission'},
+        #      'width': '75px'},
+        # ],
         virtualization=True,
         page_action='none'
-)
-
-
+        )
 
 @app.callback(Output('Mygraph_', 'figure'), [
     Input('upload-data', 'contents'),
@@ -267,21 +258,12 @@ def update_graph(contents, filename):
                 col_unique_cnt[df[col].unique().shape[0]] = col
         max_var_col = col_unique_cnt[max(col_unique_cnt)]
 
-    fig = go.Figure()
-    fig.add_trace(go.Histogram(y=df[max_var_col], histnorm='probability'))
-    fig.update_layout(plot_bgcolor='rgb(221, 224, 235)', paper_bgcolor = 'rgb(221, 224, 235)', margin=go.layout.Margin(
-        l=0, #left margin
-        r=0, #right margin
-        b=0, #bottom margin
-        t=0  #top margin
-    )
-) # width=450, height=450,
+        fig = DM.histPlot(df, max_var_col)
 
     return fig
 
 def parse_data(contents, filename):
     content_type, content_string = contents.split(',')
-
     decoded = base64.b64decode(content_string)
     try:
         if 'csv' in filename:
@@ -303,10 +285,8 @@ def parse_data(contents, filename):
 
     return daf
 
-
 def parse_contents(contents, filename, date):
     content_type, content_string = contents.split(',')
-
     decoded = base64.b64decode(content_string)
     try:
         if 'csv' in filename:
@@ -321,8 +301,6 @@ def parse_contents(contents, filename, date):
         return html.Div([
             'There was an error processing this file.'
         ])
-
-    # x_ = df.sex.value_counts()
     return html.Div([
         html.H5(filename),
         html.H6(datetime.datetime.fromtimestamp(date)),
@@ -342,7 +320,7 @@ def parse_contents(contents, filename, date):
         })
     ])
 
-# Это вывод csvшки
+# Updated DataFrame
 @app.callback(Output('output-data-upload', 'children'),
               [Input('upload-data', 'contents')],
               [State('upload-data', 'filename'),
@@ -355,6 +333,18 @@ def update_output(list_of_contents, list_of_names, list_of_dates):
 
         return children
 
+# Это dash-like вывод DataFrame
+@app.callback(Output('output-data-upload', 'children'),
+              [Input('upload-data', 'contents')],
+              [State('upload-data', 'filename'),
+               State('upload-data', 'last_modified')])
+def update_output(list_of_contents, list_of_names, list_of_dates):
+    if list_of_contents is not None:
+        children = [
+            parse_contents(c, n, d) for c, n, d in
+            zip(list_of_contents, list_of_names, list_of_dates)]
+
+        return children
 
 if __name__ == '__main__':
     app.run_server(debug=True)
