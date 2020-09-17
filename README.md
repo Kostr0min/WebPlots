@@ -44,7 +44,7 @@ Folder with webplots -> your_path
 Use terminal and go to your path -> cd /home/username/your_path  
 Be sure that port for Docker app (Dockerfile -> EXPOSE: port) is free  
 Build the container $docker-compose build  
-And run application &docker-compose up  
+And run application $docker-compose up  
 
 Be aware that docker containers are configured with the local MySQL server in mind. If you want to use MySQL docker container uncomment code in docker-compose.yml and clear line 9: network_mode: "host" and configure Docker volume for data. (I advice to use mysql-connector-python instead of SQLAlchemy)
 
