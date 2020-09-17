@@ -57,13 +57,25 @@ H5, H3 {
     color: #122;
     border-radius: 4px;
     text-align: center;
-    font-size: 20px;
+    font-size: 10px;
     font-weight: 600;
     line-height: 38px;
 }
+.pos_right {
+  position: relative;
+  margin-top: 50%;
+  margin-left: 120%;
+}
+.loader_progress {
+    margin-top: 15px;
+    width: 20%;
+    align-items:flex-start;
+    padding: 0rem 0.5rem;
+    color: #122;
+}
+
 
 #left-column {
-    width: 470%,
     background-color: #dde0eb;
     margin-top: 20px;
     padding: 0rem 2rem;
@@ -80,25 +92,13 @@ H5, H3 {
     min-height: calc(100vh - 5.5rem);
 }
 
-/*
-#left-column {
-    margin-top: 50px;
-    background-color: #f4f4f4;
-    width: 47%;
-    margin-left: 0px,
-    padding: 0rem 0.5rem;
+
+#left-table {
+    margin-top: 30px;
+    background-color: #dde0eb;
+    padding: 0rem 2rem;
     min-height: calc(100vh - 5.5rem);
 }
-
-#right-column {
-    margin-top: 50px;
-    background-color: #f4f4f4;
-    width: 47%;
-    padding: 0rem 0.5rem;
-    min-height: calc(100vh - 5.5rem);
-}
-    */
-
 
 .table-row {
     height: 63px;
@@ -125,14 +125,14 @@ H5, H3 {
     font-weight: bold;
 }
 
-#patient_volume_card, #wait_time_card {
+#graph_pad, #wait_time_card {
     background-color: #dde0eb;
     padding: 1rem;
     margin: auto;
-    margin-top: 20px;
+    margin-top: 100px;
 }
 
-#patient_volume_card > b, #wait_time_card > b {
+#graph_pad > b, #wait_time_card > b {
     line-height: 2.5;
 }
 
@@ -223,7 +223,7 @@ H5, H3 {
         clear: both;
     }
 
-    #patient_volume_card > b, #wait_time_card > b {
+    #graph_pad > b, #wait_time_card > b {
         line-height: 2.5;
         font-size: 13px;
         display: block;
