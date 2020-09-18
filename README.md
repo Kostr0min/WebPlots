@@ -48,6 +48,17 @@ And run application $docker-compose up
 
 Be aware that docker containers are configured with the local MySQL server in mind. If you want to use MySQL docker container uncomment code in docker-compose.yml and clear line 9: network_mode: "host" and configure Docker volume for data. (I advice to use mysql-connector-python instead of SQLAlchemy)
 
+## **Testing**
+
+Requirements:
+ - Main tool for testing this app is the dash.testing
+ - Selenium
+ - Webdriver (for Chrome, Firefox, etc.)
+ A few installation tips for ChromeDriver:
+ First, you need to download the chromedriver file for Chromium (https://sites.google.com/a/chromium.org/chromedriver/home).
+ Add this file to your PATH (like: export PATH="/home/user/driver_path/:$PATH"). And now type --webdriver Chrome parametr for pytest: $pytest --webdriver Chrome tests.py
+
+ 
 
 ## **Session keeper**
 
@@ -55,3 +66,5 @@ To save your configuration press the save button and copy your code.
 If you want to restore all settings just insert your code in whitespace in the top of load button and press this button.  
 
 ![Image](https://github.com/Kostr0min/WebPlots/blob/master/github_images/webplots_sessioncode.png)
+
+
