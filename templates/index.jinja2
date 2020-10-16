@@ -1,13 +1,51 @@
 {% extends "layout.jinja2" %}
 
 {% block content %}
+
 <div class="card">
-  <img src="{{ url_for('static', filename='img/logo.png'') }}" class="logo" />
+  <html lang="en">
+  <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo" />
   <h1 class="site-title">{{ title }}</h1>
   <p class="subtitle">Explore your data using advanced graphs and tabs (View source on <a href="https://github.com/Kostr0min/WebPlots">Github</a>).</p>
   <a href="/dashapp/" class="dash-link">
-    <span>start analyzing</span>
-    <i class="fas fa-arrow-right"></i>
+  <form action = "http://localhost:5000/result" method = "POST">
+  <span>start analyzing</span>
+  <i class="fas fa-arrow-right"></i>
   </a>
+
+
+  {% if message %}
+        <p>{{ message }}</p>
+    {% endif %}
+    <h2 class="subtitle">Connect to database</h2>
+    <form action="" method="post">
+    <p>
+	    <label for="hostname">Hostname</label>
+	    <input type="text" name="hostname">
+	</p>
+	<p>
+	    <label for="dbname">Database name</label>
+	    <input type="text" name="dbname">
+	</p>
+	<p>
+	    <label for="jdbcPort">jdbcPort number</label>
+	    <input type="text" name="jdbcPort">
+	</p>
+	<p>
+	    <label for="username">Username</label>
+	    <input type="text" name="username">
+	</p>
+	<p>
+	    <label for="password">Password</label>
+	    <input type="password" name="password">
+	</p>
+	<p>
+	    <html lang="en">
+	    <input type="submit">
+	</p>
+    </form>
 </div>
+
+
+
 {% endblock %}
