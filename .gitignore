@@ -1,4 +1,7 @@
+ 5 lines (5 sloc) 32 Bytes
 venv
+trash
 *.pyc
 .DS_Store
 .env
+.idea

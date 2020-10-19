@@ -1,0 +1,16 @@
+{% extends "layout.jinja2" %}
+
+{% block content %}
+
+<div class="card">
+  <html lang="en">
+  <img src="{{ url_for('static', filename='img/logo.png') }}" class="logo" />
+  <h1 class="site-title">{{ title }}</h1>
+  <p class="subtitle">Explore your data using advanced graphs and tabs (View source on <a href="https://github.com/Kostr0min/WebPlots">Github</a>).</p>
+  <a href="/dashapp/" class="dash-link">
+  <form action = "http://localhost:5000/result" method = "POST">
+  <span>start analyzing</span>
+  <i class="fas fa-arrow-right"></i>
+  </a>
+
+{% endblock %}
