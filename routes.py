@@ -13,20 +13,3 @@ def home():
         template='home-template',
         body="This is a homepage served with Flask."
     )
-
-@app.route('/login/', methods=['post', 'get'])
-def login():
-    message = ''
-    if request.method == 'POST':
-        hostname = request.form.get('hostname')
-        jdbcPort  = request.form.get('jdbcPort')
-        dbname = request.form.get('dbname')
-        username = request.form.get('username')
-        password = request.form.get('password')
-
-    # if username == 'root' and password == 'pass':
-    #     message = "Correct username and password"
-    # else:
-    #     message = "Wrong username or password"
-
-    return render_template('index.jinja2', message=message)
